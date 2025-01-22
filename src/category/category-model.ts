@@ -1,0 +1,117 @@
+import mongoose from "mongoose";
+
+export interface Attribute {
+  name: string;
+  widgetType: "switch" | "radio";
+  defaultValue: string;
+  availableOptins: string[];
+}
+
+export interface PriceConfiguration {
+  [key: string]: {
+    priceType: "base" | "aditional";
+    availableOptions: string[];
+  };
+}
+
+export interface Category {
+  name: string;
+  priceConfiguration: PriceConfiguration;
+  attributes: Attribute[];
+}
+
+const attributeSchema = new mongoose.Schema<Attribute>({
+  name: {
+    type: String,
+    required: true,
+  },
+  widgetType: {
+    type: String,
+    enum: ["switch", "radio"],
+    required: true,
+  },
+  defaultValue: {
+    type: mongoose.Schema.Types.Mixed,
+    required: true,
+  },
+  availableOptins: {
+    type: [String],
+    required: true,
+  },
+});
+
+const priceConfigSchema = new mongoose.Schema<PriceConfiguration>({
+  priceType: {
+    type: String,
+    enum: ["base", "additional"],
+    required: true,
+  },
+  availableOptions: {
+    type: [String],
+    required: true,
+  },
+});
+
+const categorySchema = new mongoose.Schema<Category>({
+  name: {
+    type: String,
+    required: true,
+  },
+  priceConfiguration: {
+    type: Map,
+    of: priceConfigSchema,
+    required: true,
+  },
+  attributes: {
+    type: [attributeSchema],
+    required: true,
+  },
+});
+
+export default mongoose.model("Category", categorySchema);
+
+/*
+Sample Category JSON Doc
+
+{
+    "name": "Pizza",
+    "priceConfiguration": {
+      "Size": {
+        "priceType": "base",
+        "availableOptions": [
+          "Small",
+          "Medium",
+          "Large"
+        ]
+      },
+      "Crust": {
+        "priceType": "aditional",
+        "availableOptions": [
+          "Thin",
+          "Thick"
+        ]
+      }
+    },
+    "attributes": [
+      {
+        "name": "isHit",
+        "widgetType": "switch",
+        "defaultValue": "No",
+        "availableOptions": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "Spiciness",
+        "widgetType": "radio",
+        "defaultValue": "Medium",
+        "availableOptions": [
+          "Less",
+          "Medium",
+          "Hot"
+        ]
+      }
+    ]
+}
+*/
