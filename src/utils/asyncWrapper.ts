@@ -1,4 +1,4 @@
-import { NextFunction, RequestHandler, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import createHttpError from "http-errors";
 
 export const asyncWrapper = (requestHandler: RequestHandler) => {

@@ -62,44 +62,33 @@ export default mongoose.model("Product", productSchema);
 Sample Prise configuration JSON Doc
 
 {
-    "Size": {
-        "priceType": "base",
-        "availableOptions": {
-            "Small": 400,
-            "Medium": 600,
-            "Large": 800
-        }
-    },
-    "Crust": {
-        "priceType": "additional",
-        "availableOptions": {
-            "Thin": 50,
-            "Thick": 100
-        }
+  "Size": {
+    "priceType": "base",
+    "availableOptions": {
+        "Small": 400,
+        "Medium": 600,
+        "Large": 800
     }
+  },
+  "Crust": {
+    "priceType": "additional",
+    "availableOptions": {
+        "Thin": 50,
+        "Thick": 100
+    }
+  }
 }
 
 Sample Attributes doc
 
-"attributes": [
-      {
-        "name": "isHit",
-        "widgetType": "switch",
-        "defaultValue": "No",
-        "availableOptions": [
-          "Yes",
-          "No"
-        ]
-      },
-      {
-        "name": "Spiciness",
-        "widgetType": "radio",
-        "defaultValue": "Medium",
-        "availableOptions": [
-          "Less",
-          "Medium",
-          "Hot"
-        ]
-      }
-    ]
+[
+  {
+    "name": "isHit",
+    "value": "Yes",
+  },
+  {
+    "name": "Spiciness",
+    "value": "Medium",
+  }
+]
 */
