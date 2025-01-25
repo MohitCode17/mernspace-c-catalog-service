@@ -30,8 +30,16 @@ export class CloudinaryStorage implements FileStorage {
   }
 
   // Delete a file from Cloudinary
-  delete(): void {
-    throw new Error("Method not implemented.");
+  async delete(publicId: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      cloudinary.uploader.destroy(publicId, (err, result) => {
+        if (err) {
+          reject(new Error(`Delete from Cloudinary failed: ${err}`));
+        } else {
+          resolve(); // Successfully deleted
+        }
+      });
+    });
   }
 
   // Get the URI of a file stored in Cloudinary
