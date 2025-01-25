@@ -7,6 +7,8 @@ import { ProductService } from "./product-service";
 import { Logger } from "winston";
 import { FileStorage } from "../common/types/storage";
 import { UploadedFile } from "express-fileupload";
+import { AuthRequest } from "../common/types";
+import { ROLES } from "../common/constants";
 
 export class ProductController {
   constructor(
@@ -90,6 +92,16 @@ export class ProductController {
     const product = await this.productService.getProduct(productId);
     if (!product) {
       return next(createHttpError(404, "Product not found."));
+    }
+
+    // Check if tenant has access to the product
+    if ((req as AuthRequest).auth.role !== ROLES.ADMIN) {
+      const tenant = (req as AuthRequest).auth.tenant;
+      if (product.tenantId !== String(tenant)) {
+        return next(
+          createHttpError(403, "You are not allow to access this product."),
+        );
+      }
     }
 
     // Variables for image handling
