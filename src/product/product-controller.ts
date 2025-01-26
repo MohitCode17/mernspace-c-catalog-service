@@ -26,18 +26,18 @@ export class ProductController {
     }
 
     // Ensure that the image is provided in the req.
-    const image = req.files?.image as UploadedFile | undefined;
+    const image = req.files?.image as UploadedFile;
 
     if (!image) {
       return next(createHttpError(400, "Image file is required."));
     }
 
     // Generate a unique filename without appending an extension
-    const nameWithoutExtension = image.name.replace(/\.[^/.]+$/, ""); // Remove any existing extension
-    const uniqueFilename = `${Date.now()}-${nameWithoutExtension}`; // No manual extension added
+    const nameWithoutExtension = image.name.replace(/\.[^/.]+$/, "");
+    const uniqueFilename = `${Date.now()}-${nameWithoutExtension}`;
 
     // Upload the image to cloudinary using the FileStorage abstraction
-    const imageUrl = await this.storage.upload({
+    const imagePublicId = await this.storage.upload({
       filename: uniqueFilename,
       fileData: image.data.buffer,
     });
@@ -61,8 +61,7 @@ export class ProductController {
       tenantId,
       categoryId,
       isPublish,
-      // Todo Image
-      image: imageUrl, // save the cloudinary public id or secure url in the product record
+      image: imagePublicId,
     };
 
     const newProduct = await this.productService.create(product);
@@ -71,14 +70,6 @@ export class ProductController {
 
     res.status(201).json({ id: newProduct._id });
   };
-
-  // Helper method to extract the public ID from a Cloudinary URL
-  private extractPublicId(imageUrl: string): string {
-    const parts = imageUrl.split("/");
-    const fileNameWithExtension = parts[parts.length - 1];
-    const publicId = fileNameWithExtension.split(".")[0]; // Remove the file extension
-    return publicId;
-  }
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
@@ -106,26 +97,24 @@ export class ProductController {
     }
 
     // Variables for image handling
-    let updatedImageUrl = product.image; // Keep the old image by default
+    let updatedImagePublicId = product.image; // Keep the old image by default
 
     // Check if user send the new image
     if (req.files?.image) {
       const image = req.files.image as UploadedFile;
 
       // Generate a new unique filename
-      const nameWithoutExtension = image.name.replace(/\.[^/.]+$/, ""); // Remove any existing extension
-      const uniqueFilename = `${Date.now()}-${nameWithoutExtension}`; // No manual extension added
+      const nameWithoutExtension = image.name.replace(/\.[^/.]+$/, "");
+      const uniqueFilename = `${Date.now()}-${nameWithoutExtension}`;
 
-      updatedImageUrl = await this.storage.upload({
+      updatedImagePublicId = await this.storage.upload({
         filename: uniqueFilename,
         fileData: image.data.buffer,
       });
 
       // Delete the old image from Cloudinary if it exists
       if (product.image) {
-        const oldPublicId = this.extractPublicId(product.image);
-        const deletedImage = await this.storage.delete(oldPublicId);
-        console.log(deletedImage);
+        await this.storage.delete(product.image);
       }
     }
 
@@ -148,7 +137,7 @@ export class ProductController {
       tenantId,
       categoryId,
       isPublish,
-      image: updatedImageUrl,
+      image: updatedImagePublicId,
     };
 
     const savedproduct = await this.productService.updateProduct(

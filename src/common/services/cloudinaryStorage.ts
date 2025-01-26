@@ -20,7 +20,7 @@ export class CloudinaryStorage implements FileStorage {
           if (err) {
             reject(new Error(`Upload to Cloudinary failed: ${err.message}`));
           } else {
-            resolve(result?.secure_url || ""); // Resolve with the secure_url or an empty string
+            resolve(result?.public_id || ""); // Resolve with the public_id or an empty string
           }
         },
       );
