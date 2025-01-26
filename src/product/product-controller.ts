@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 import { NextFunction } from "express-serve-static-core";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { Product } from "./product-types";
+import { Filter, Product } from "./product-types";
 import { ProductService } from "./product-service";
 import { Logger } from "winston";
 import { FileStorage } from "../common/types/storage";
 import { UploadedFile } from "express-fileupload";
 import { AuthRequest } from "../common/types";
 import { ROLES } from "../common/constants";
+import mongoose from "mongoose";
 
 export class ProductController {
   constructor(
@@ -158,5 +159,34 @@ export class ProductController {
     res
       .status(200)
       .json({ message: "Product updated successfully", id: savedproduct?.id });
+  };
+
+  index = async (req: Request, res: Response, next: NextFunction) => {
+    // Getting queries like search, filter, etc.
+    const { q, tenantId, categoryId, isPublish } = req.query;
+
+    // Filter objects
+    const filters: Filter = {};
+
+    if (isPublish === "true") {
+      filters.isPublish = true;
+    }
+
+    if (tenantId) {
+      filters.tenantId = tenantId as string;
+    }
+
+    if (categoryId && mongoose.Types.ObjectId.isValid(categoryId as string)) {
+      filters.categoryId = new mongoose.Types.ObjectId(categoryId as string);
+    }
+
+    const products = await this.productService.getProducts(
+      q as string,
+      filters,
+    );
+
+    this.logger.info("All products has been fetched.");
+
+    res.json(products);
   };
 }
