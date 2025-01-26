@@ -1,5 +1,7 @@
+import createHttpError from "http-errors";
 import cloudinary from "../../config/cloudinary";
 import { FileData, FileStorage } from "../types/storage";
+import config from "config";
 
 export class CloudinaryStorage implements FileStorage {
   constructor() {
@@ -43,7 +45,15 @@ export class CloudinaryStorage implements FileStorage {
   }
 
   // Get the URI of a file stored in Cloudinary
-  getObjectUri(): string {
-    throw new Error("Method not implemented.");
+  getObjectUri(publicId: string): string {
+    // Url:- `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+    const cloudName = config.get("cloudinary.cloud_name");
+
+    if (typeof cloudName === "string") {
+      return `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+    }
+
+    const error = createHttpError(500, "Invalid cloudinary Url configuration.");
+    throw error;
   }
 }

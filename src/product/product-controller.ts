@@ -178,8 +178,15 @@ export class ProductController {
       },
     );
 
+    const finalProducts = (products.data as Product[]).map(
+      (product: Product) => ({
+        ...product,
+        image: this.storage.getObjectUri(product.image),
+      }),
+    );
+
     this.logger.info("All products has been fetched.");
 
-    res.json(products);
+    res.json(finalProducts);
   };
 }
