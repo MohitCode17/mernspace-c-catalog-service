@@ -158,7 +158,7 @@ export class ProductController {
 
     res
       .status(200)
-      .json({ message: "Product updated successfully", id: savedproduct?.id });
+      .json({ message: "Product updated successfully", id: savedproduct?._id });
   };
 
   index = async (req: Request, res: Response, next: NextFunction) => {
@@ -183,6 +183,10 @@ export class ProductController {
     const products = await this.productService.getProducts(
       q as string,
       filters,
+      {
+        page: req.query.page ? parseInt(req.query.page as string) : 1,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
+      },
     );
 
     this.logger.info("All products has been fetched.");

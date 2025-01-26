@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const attributeValueSchema = new mongoose.Schema({
   name: {
@@ -55,39 +56,6 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+productSchema.plugin(aggregatePaginate);
+
 export default mongoose.model("Product", productSchema);
-
-/*
-Sample Prise configuration JSON Doc
-
-{
-  "Size": {
-    "priceType": "base",
-    "availableOptions": {
-        "Small": 400,
-        "Medium": 600,
-        "Large": 800
-    }
-  },
-  "Crust": {
-    "priceType": "additional",
-    "availableOptions": {
-        "Thin": 50,
-        "Thick": 100
-    }
-  }
-}
-
-Sample Attributes doc
-
-[
-  {
-    "name": "isHit",
-    "value": "Yes",
-  },
-  {
-    "name": "Spiciness",
-    "value": "Medium",
-  }
-]
-*/
