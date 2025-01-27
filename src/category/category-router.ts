@@ -7,6 +7,7 @@ import { asyncWrapper } from "../utils/asyncWrapper";
 import authenticate from "../common/middlewares/authenticate";
 import { canAccess } from "../common/middlewares/canAccess";
 import { ROLES } from "../common/constants";
+import categoryUpdateValidator from "./category-update-validator";
 
 const router = express.Router();
 
@@ -27,5 +28,14 @@ router.get("/", asyncWrapper(categoryController.index));
 
 // Get category
 router.get("/:categoryId", asyncWrapper(categoryController.getOne));
+
+// Create Category
+router.patch(
+  "/:id",
+  authenticate,
+  canAccess([ROLES.ADMIN]),
+  categoryUpdateValidator,
+  asyncWrapper(categoryController.update),
+);
 
 export default router;
