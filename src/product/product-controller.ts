@@ -189,4 +189,13 @@ export class ProductController {
 
     res.json(finalProducts);
   };
+
+  getone = async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+
+    const product = await this.productService.getProduct(productId);
+    this.logger.info("Product is fetched", { id: product?._id });
+
+    res.json(product);
+  };
 }

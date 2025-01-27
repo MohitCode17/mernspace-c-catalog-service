@@ -60,4 +60,7 @@ router.put(
 // Get Products
 router.get("/", asyncWrapper(productController.index));
 
+// Get Product
+router.get("/:productId", asyncWrapper(productController.getone));
+
 export default router;
