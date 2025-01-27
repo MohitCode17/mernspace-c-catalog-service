@@ -9,11 +9,9 @@ export class CategoryController {
   constructor(
     private categoryService: CategoryService,
     private logger: Logger,
-  ) {
-    this.create = this.create.bind(this);
-  }
+  ) {}
 
-  async create(req: Request, res: Response, next: NextFunction) {
+  create = async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
@@ -31,5 +29,11 @@ export class CategoryController {
     this.logger.info("Created category", { id: category._id });
 
     res.status(201).json({ id: category._id });
-  }
+  };
+
+  index = async (req: Request, res: Response, next: NextFunction) => {
+    const categories = await this.categoryService.getAll();
+    this.logger.info("All categories has been fetched");
+    res.json(categories);
+  };
 }
