@@ -87,4 +87,20 @@ export class CategoryController {
       id: updatedCategory?._id,
     });
   };
+
+  destroy = async (req: Request, res: Response, next: NextFunction) => {
+    const { categoryId } = req.params;
+
+    const category = await this.categoryService.getOne(categoryId);
+
+    if (!category) {
+      return next(createHttpError(404, "Category not found."));
+    }
+
+    await this.categoryService.delete(categoryId);
+
+    this.logger.info("Category deleted.");
+
+    res.json({ message: "Category deleted successfully." });
+  };
 }
