@@ -198,4 +198,36 @@ export class ProductController {
 
     res.json(product);
   };
+
+  destroy = async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+
+    const product = await this.productService.getProduct(productId);
+
+    if (!product) {
+      return next(createHttpError(404, "Product not found."));
+    }
+
+    // Check if tenant has access to the product
+    if ((req as AuthRequest).auth.role !== ROLES.ADMIN) {
+      const tenant = (req as AuthRequest).auth.tenant;
+      if (product.tenantId !== String(tenant)) {
+        return next(
+          createHttpError(403, "You are not allow to access this product."),
+        );
+      }
+    }
+
+    // Destroy the product image from cloudinary
+    if (product.image) {
+      await this.storage.delete(product.image);
+    }
+
+    // Delete the product from database
+    await this.productService.delete(productId);
+
+    this.logger.info("Product deleted successfully", { id: productId });
+
+    res.json({ message: "Product has been deleted.", id: productId });
+  };
 }

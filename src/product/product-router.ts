@@ -11,7 +11,6 @@ import { CloudinaryStorage } from "../common/services/cloudinaryStorage";
 import createHttpError from "http-errors";
 import createProductValidator from "./create-product-validator";
 import updateProductValidator from "./update-product-validator";
-// import updateProductValidator from "./update-product-validator";
 
 const router = express.Router();
 
@@ -62,5 +61,13 @@ router.get("/", asyncWrapper(productController.index));
 
 // Get Product
 router.get("/:productId", asyncWrapper(productController.getone));
+
+// Delete Product
+router.delete(
+  "/:productId",
+  authenticate,
+  canAccess([ROLES.ADMIN, ROLES.MANAGER]),
+  asyncWrapper(productController.destroy),
+);
 
 export default router;

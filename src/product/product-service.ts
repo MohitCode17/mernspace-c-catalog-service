@@ -67,4 +67,8 @@ export class ProductService {
       },
     )) as Product;
   }
+
+  async delete(productId: string): Promise<Product | null> {
+    return await ProductModel.findByIdAndDelete(productId);
+  }
 }
