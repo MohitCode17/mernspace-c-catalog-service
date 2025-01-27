@@ -36,4 +36,11 @@ export class CategoryController {
     this.logger.info("All categories has been fetched");
     res.json(categories);
   };
+
+  getOne = async (req: Request, res: Response, next: NextFunction) => {
+    const { categoryId } = req.params;
+    const category = await this.categoryService.getOne(categoryId);
+    this.logger.info("Category has been fetched", { id: category?._id });
+    res.json(category);
+  };
 }
