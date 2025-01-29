@@ -187,7 +187,12 @@ export class ProductController {
 
     this.logger.info("All products has been fetched.");
 
-    res.json(finalProducts);
+    res.json({
+      data: finalProducts,
+      total: products.total,
+      pageSize: products.limit,
+      currentPage: products.page,
+    });
   };
 
   getone = async (req: Request, res: Response, next: NextFunction) => {
