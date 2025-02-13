@@ -11,14 +11,18 @@ import { CloudinaryStorage } from "../common/services/cloudinaryStorage";
 import createHttpError from "http-errors";
 import createProductValidator from "./create-product-validator";
 import updateProductValidator from "./update-product-validator";
+import { createMessageProducerBroker } from "../common/factories/brokerFactory";
 
 const router = express.Router();
 
 const productService = new ProductService();
 const cloudinaryStorage = new CloudinaryStorage();
+const broker = createMessageProducerBroker();
+
 const productController = new ProductController(
   productService,
   cloudinaryStorage,
+  broker,
   logger,
 );
 

@@ -10,11 +10,13 @@ import { UploadedFile } from "express-fileupload";
 import { AuthRequest } from "../common/types";
 import { ROLES } from "../common/constants";
 import mongoose from "mongoose";
+import { MessageProducerBroker } from "../common/types/broker";
 
 export class ProductController {
   constructor(
     private productService: ProductService,
     private storage: FileStorage,
+    private broker: MessageProducerBroker,
     private logger: Logger,
   ) {}
 
@@ -65,6 +67,15 @@ export class ProductController {
     };
 
     const newProduct = await this.productService.create(product);
+
+    // Send Product to kafka
+    await this.broker.sendMessage(
+      "product",
+      JSON.stringify({
+        id: newProduct._id,
+        priceConfiguration: newProduct.priceConfiguration,
+      }),
+    );
 
     this.logger.info("Created product", { id: newProduct._id });
 
@@ -143,6 +154,15 @@ export class ProductController {
     const savedproduct = await this.productService.updateProduct(
       productId,
       updatedProduct,
+    );
+
+    // Send Product to kafka
+    await this.broker.sendMessage(
+      "product",
+      JSON.stringify({
+        id: savedproduct._id,
+        priceConfiguration: savedproduct.priceConfiguration,
+      }),
     );
 
     res
