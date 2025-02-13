@@ -4,6 +4,7 @@ export interface Product {
   _id?: mongoose.Types.ObjectId;
   name: string;
   description: string;
+  // TODO: FIX THE PRICE CONFIGURATION TYPE
   priceConfiguration: string;
   attributes: string;
   tenantId: string;

@@ -11,6 +11,7 @@ import { AuthRequest } from "../common/types";
 import { ROLES } from "../common/constants";
 import mongoose from "mongoose";
 import { MessageProducerBroker } from "../common/types/broker";
+import { mapToObject } from "../utils";
 
 export class ProductController {
   constructor(
@@ -73,7 +74,9 @@ export class ProductController {
       "product",
       JSON.stringify({
         id: newProduct._id,
-        priceConfiguration: newProduct.priceConfiguration,
+        priceConfiguration: mapToObject(
+          newProduct.priceConfiguration as unknown as Map<string, any>,
+        ),
       }),
     );
 
@@ -161,7 +164,9 @@ export class ProductController {
       "product",
       JSON.stringify({
         id: savedproduct._id,
-        priceConfiguration: savedproduct.priceConfiguration,
+        priceConfiguration: mapToObject(
+          savedproduct.priceConfiguration as unknown as Map<string, any>,
+        ),
       }),
     );
 
