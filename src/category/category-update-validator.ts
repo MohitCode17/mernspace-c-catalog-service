@@ -10,7 +10,6 @@ export default [
 
   // Ensure at least one field is present
   body().custom((value) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (Object.keys(value).length === 0) {
       throw new Error("At least one field must be provided for update");
     }
