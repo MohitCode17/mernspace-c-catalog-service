@@ -6,11 +6,13 @@ import { FileStorage } from "../common/types/storage";
 import { ToppingService } from "./topping-service";
 import { Topping } from "./topping-types";
 import { Logger } from "winston";
+import { MessageProducerBroker } from "../common/types/broker";
 
 export class ToppingController {
   constructor(
     private storage: FileStorage,
     private toppingService: ToppingService,
+    private broker: MessageProducerBroker,
     private logger: Logger,
   ) {}
 
@@ -49,6 +51,15 @@ export class ToppingController {
 
     // Create new Topping
     const newTopping = await this.toppingService.create(topping);
+
+    await this.broker.sendMessage(
+      "topping",
+      JSON.stringify({
+        id: newTopping._id,
+        price: newTopping.price,
+        tenantId: newTopping.tenantId,
+      }),
+    );
 
     this.logger.info("Created product", { id: newTopping._id });
 

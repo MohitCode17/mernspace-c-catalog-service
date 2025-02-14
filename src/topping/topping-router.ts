@@ -10,14 +10,18 @@ import logger from "../config/logger";
 import { CloudinaryStorage } from "../common/services/cloudinaryStorage";
 import createHttpError from "http-errors";
 import createToppingValidator from "./create-topping-validator";
+import { createMessageProducerBroker } from "../common/factories/brokerFactory";
 
 const router = express.Router();
 
 const toppingService = new ToppingService();
 const cloudinaryStorage = new CloudinaryStorage();
+const broker = createMessageProducerBroker();
+
 const toppingController = new ToppingController(
   cloudinaryStorage,
   toppingService,
+  broker,
   logger,
 );
 
