@@ -4,7 +4,7 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { FileStorage } from "../common/types/storage";
 import { ToppingService } from "./topping-service";
-import { Topping } from "./topping-types";
+import { Topping, ToppingEvents } from "./topping-types";
 import { Logger } from "winston";
 import { MessageProducerBroker } from "../common/types/broker";
 
@@ -55,9 +55,12 @@ export class ToppingController {
     await this.broker.sendMessage(
       "topping",
       JSON.stringify({
-        id: newTopping._id,
-        price: newTopping.price,
-        tenantId: newTopping.tenantId,
+        event_type: ToppingEvents.TOPPING_CREATE,
+        data: {
+          id: newTopping._id,
+          price: newTopping.price,
+          tenantId: newTopping.tenantId,
+        },
       }),
     );
 
