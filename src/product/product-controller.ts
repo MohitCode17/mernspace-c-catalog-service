@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { NextFunction } from "express-serve-static-core";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { Filter, Product } from "./product-types";
+import { Filter, Product, ProductEvents } from "./product-types";
 import { ProductService } from "./product-service";
 import { Logger } from "winston";
 import { FileStorage } from "../common/types/storage";
@@ -69,14 +69,18 @@ export class ProductController {
 
     const newProduct = await this.productService.create(product);
 
-    // Send Product to kafka
+    // SEND PRODUCT OBJECT TO KAFKA
     await this.broker.sendMessage(
       "product",
       JSON.stringify({
-        id: newProduct._id,
-        priceConfiguration: mapToObject(
-          newProduct.priceConfiguration as unknown as Map<string, any>,
-        ),
+        event_type: ProductEvents.PRODUCT_CREATE,
+        data: {
+          id: newProduct._id,
+          // TODO: FIX THE TYPESCRIPT ERROR
+          priceConfiguration: mapToObject(
+            newProduct.priceConfiguration as unknown as Map<string, any>,
+          ),
+        },
       }),
     );
 
@@ -110,7 +114,6 @@ export class ProductController {
       }
     }
 
-    // Variables for image handling
     let updatedImagePublicId = product.image; // Keep the old image by default
 
     // Check if user send the new image
@@ -163,10 +166,13 @@ export class ProductController {
     await this.broker.sendMessage(
       "product",
       JSON.stringify({
-        id: savedproduct._id,
-        priceConfiguration: mapToObject(
-          savedproduct.priceConfiguration as unknown as Map<string, any>,
-        ),
+        event_type: ProductEvents.PRODUCT_UPDATE,
+        data: {
+          id: savedproduct._id,
+          priceConfiguration: mapToObject(
+            savedproduct.priceConfiguration as unknown as Map<string, any>,
+          ),
+        },
       }),
     );
 
