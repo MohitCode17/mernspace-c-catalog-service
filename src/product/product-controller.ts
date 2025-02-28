@@ -42,7 +42,7 @@ export class ProductController {
     // Upload the image to cloudinary using the FileStorage abstraction
     const imagePublicId = await this.storage.upload({
       filename: uniqueFilename,
-      fileData: image.data.buffer,
+      fileData: image.data.buffer as ArrayBuffer,
     });
 
     // Create product
@@ -126,7 +126,7 @@ export class ProductController {
 
       updatedImagePublicId = await this.storage.upload({
         filename: uniqueFilename,
-        fileData: image.data.buffer,
+        fileData: image.data.buffer as ArrayBuffer,
       });
 
       // Delete the old image from Cloudinary if it exists

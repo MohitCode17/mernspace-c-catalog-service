@@ -37,7 +37,7 @@ export class ToppingController {
     // Upload the image to cloudinary using the FileStorage abstraction
     const imagePublicId = await this.storage.upload({
       filename: uniqueFilename,
-      fileData: image.data.buffer,
+      fileData: image.data.buffer as ArrayBuffer,
     });
 
     const { name, price, tenantId } = req.body as Topping;
