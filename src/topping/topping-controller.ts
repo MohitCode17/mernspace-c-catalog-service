@@ -7,6 +7,7 @@ import { ToppingService } from "./topping-service";
 import { Topping, ToppingEvents } from "./topping-types";
 import { Logger } from "winston";
 import { MessageProducerBroker } from "../common/types/broker";
+import { Filter } from "../product/product-types";
 
 export class ToppingController {
   constructor(
@@ -70,20 +71,34 @@ export class ToppingController {
   };
 
   getAll = async (req: Request, res: Response, next: NextFunction) => {
-    const toppings = await this.toppingService.getAll(
-      req.query.tenantId as string,
-    );
+    // GETTING QUESRIES LIKE SEARCH, FILTER, ETC.
+    const { q, tenantId } = req.query;
 
-    const readyToppings = toppings.map((topping) => {
-      return {
-        id: topping._id,
-        name: topping.name,
-        price: topping.price,
-        tenantId: topping.tenantId,
-        image: this.storage.getObjectUri(topping.image),
-      };
+    const filters: Filter = {};
+
+    if (tenantId) {
+      filters.tenantId = tenantId as string;
+    }
+
+    const toppings = await this.toppingService.getAll(q as string, filters, {
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
     });
 
-    res.json(readyToppings);
+    const finalToppings = (toppings.data as Topping[]).map(
+      (topping: Topping) => ({
+        ...topping,
+        image: this.storage.getObjectUri(topping.image),
+      }),
+    );
+
+    this.logger.info("All topping has been fetched.");
+
+    res.json({
+      data: finalToppings,
+      total: toppings.total,
+      pageSize: toppings.limit,
+      currentPage: toppings.page,
+    });
   };
 }
