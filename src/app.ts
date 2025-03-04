@@ -1,15 +1,23 @@
 import express from "express";
+import config from "config";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
 import categoryRouter from "./category/category-router";
 import productRouter from "./product/product-router";
 import toppingRouter from "./topping/topping-router";
-import cookieParser from "cookie-parser";
-import cors from "cors";
 
 const app = express();
+
+const ALLOWED_DOMAINS = [
+  config.get("frontend.clientUI"),
+  config.get("frontend.adminUI"),
+];
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: ALLOWED_DOMAINS as string[],
     credentials: true,
   }),
 );
