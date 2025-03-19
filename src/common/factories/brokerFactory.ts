@@ -7,9 +7,10 @@ let messageProducer: MessageProducerBroker | null = null;
 export const createMessageProducerBroker = (): MessageProducerBroker => {
   // Making singletone
   if (!messageProducer) {
-    messageProducer = new kafkaProducerBroker("catalog-service", [
+    messageProducer = new kafkaProducerBroker(
+      "catalog-service",
       config.get("kafka.broker"),
-    ]);
+    );
   }
 
   return messageProducer;
