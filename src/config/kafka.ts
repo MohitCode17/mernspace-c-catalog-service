@@ -16,6 +16,7 @@ export class kafkaProducerBroker implements MessageProducerBroker {
       kafkaConfig = {
         ...kafkaConfig,
         ssl: true,
+        connectionTimeout: 45000,
         sasl: {
           mechanism: "plain",
           username: config.get("kafka.sasl.username"),
